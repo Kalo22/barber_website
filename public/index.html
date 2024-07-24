@@ -1,14 +1,82 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Website</title>
-  <link href="/dist/output.css" rel="stylesheet">
-  <script src="https://unpkg.com/htmx.org@1.3.3"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop Appointment</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-900">
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold">Welcome to My Website</h1>
-  </div>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Book an Appointment</h1>
+        <form id="appointmentForm" class="max-w-lg mx-auto bg-white p-8 rounded shadow">
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" id="name" name="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+            </div>
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" name="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+            </div>
+            <div class="mb-4">
+                <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                <input type="date" id="date" name="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+            </div>
+            <div class="mb-4">
+                <label for="time" class="block text-sm font-medium text-gray-700">Time</label>
+                <input type="time" id="time" name="time" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Book Appointment
+            </button>
+        </form>
+        <p id="message" class="text-center mt-4"></p>
+    </div>
+
+    <script src="https://unpkg.com/htmx.org@1.5.0/dist/htmx.min.js"></script>
+    <script>
+        const form = document.getElementById('appointmentForm');
+        const message = document.getElementById('message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Extract form values
+            const formData = new FormData(form);
+            const date = formData.get('date');
+            const time = formData.get('time');
+            
+            // Combine date and time into ISO 8601 format
+            const startDateTime = `${date}T${time}:00Z`;
+            const endDateTime = `${date}T${time}:00Z`; // Adjust this if your appointment has a duration
+
+            // Create an object with the form data
+            const appointmentData = {
+                id: Date.now(), // You can generate or use a specific ID if needed
+                confirmed: false, // You can set this based on your logic
+                name: formData.get('name'),
+                email: formData.get('email'),
+                start: startDateTime,
+                end: endDateTime,
+            };
+
+            // Send the POST request
+            const response = await fetch('/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(appointmentData)
+            });
+
+            const result = await response.json();
+            message.textContent = result.message;
+
+            if (response.ok) {
+                form.reset();
+            }
+        });
+    </script>
 </body>
 </html>
