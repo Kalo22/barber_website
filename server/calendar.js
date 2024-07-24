@@ -49,6 +49,7 @@ const PASSWORD = '2213'; // Radicale password
 function createICalEvent(appointment) {
     const { summary, description, start, end } = appointment;
 
+    //debugging statements
     console.log('Appointment details:', appointment);
     console.log('App', appointment.name);
     console.log('App', appointment.email);
@@ -137,7 +138,7 @@ function createCalendarEvent(appointment) {
     });
 }
 
-function toISO8601(dateStr, timeStr) {
+function toISO8601(dateStr, timeStr) { //change date into correct format to add to radicale
     // Combine date and time strings into a single date-time string
     const dateTimeStr = `${dateStr}T${timeStr}:00`;
 
@@ -148,7 +149,7 @@ function toISO8601(dateStr, timeStr) {
     return date.toISOString();
 }
 
-function addOneHour(date) {
+function addOneHour(date) { //add one hour to get the end of te appointment
     const newDate = new Date(date);
     newDate.setHours(newDate.getHours() + 1);
     return newDate;
