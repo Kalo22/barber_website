@@ -1,43 +1,8 @@
-/*
-// server/calendar.js
-const caldav = require('caldav');
+const https = require('https'); // Ensure you're using the correct module
 
-// Define the credentials and server URL
-const url = 'http://localhost:5232/collections/collection-root/kalo/fd600e6d-9189-0a9d-dff6-ae8e16da8faa/';
-const username = 'kalo'; // Plain-text username
-const password = '2213'; // Plain-text password
-
-// Function to create a calendar event in Radicale
-async function createCalendarEvent(appointment) {
-    try {
-
-        
-
-        const event = {
-            uid: appointment.id.toString(),
-            summary: `Appointment with ${appointment.name}`,
-            start: new Date(appointment.date + 'T' + appointment.time),
-            duration: { hours: 1 },
-        };
-
-        await client.createEvent(event);
-        console.log('Event created in Radicale successfully');
-    } catch (error) {
-        console.error('Error creating event in Radicale:', error);
-        throw new Error('Failed to create calendar event');
-    }
-}
-
-module.exports = { createCalendarEvent };
-*/
-
-// server/calendar.js
-const https = require('http');
-
-// Radicale server configuration
-const RADICALE_SERVER_URL = 'cal.batnako.net'; // Only the hostname, we'll include the port and path in the request
-const RADICALE_PORT = 80; // Port to your Radicale server
-const CALENDAR_PATH = '/testuser/efba3538-fccd-3ecb-d678-2859a01f6a00/'; // Path to the user's calendar in Radicale
+const RADICALE_SERVER_URL = 'cal.batnako.net'; // Correct hostname
+const RADICALE_PORT = 443; // Default port for HTTPS
+const CALENDAR_PATH = '/testuser/efba3538-fccd-3ecb-d678-2859a01f6a00/'; // Path to the calendar
 const USERNAME = 'testuser'; // Radicale username
 const PASSWORD = 'testpassword'; // Radicale password
 
@@ -49,20 +14,6 @@ const PASSWORD = 'testpassword'; // Radicale password
 function createICalEvent(appointment) {
     const { summary, description, start, end } = appointment;
 
-    //debugging statements
-    console.log('Appointment details:', appointment);
-    console.log('App', appointment.name);
-    console.log('App', appointment.email);
-    console.log('App', appointment.date);
-    console.log('App', appointment.time);
-
-    const dstart = toISO8601(appointment.date, appointment.time);
-    const newtime = addOneHour(appointment.time);
-    const dend = toISO8601(appointment.date, newtime);
-
-    console.log('Start:', appointment.start, 'End:', appointment.end);
-    
-
     const uid = `${Date.now()}@example.com`; // Generate a unique ID for the event
 
     return `
@@ -72,10 +23,10 @@ PRODID:-//Your Organization//NONSGML v1.0//EN
 BEGIN:VEVENT
 UID:${uid}
 DTSTAMP:${formatDate(new Date())}
-DTSTART:${appointment.start}
-DTEND:${appointment.end}
-SUMMARY:${appointment.name}
-DESCRIPTION:${appointment.email}
+DTSTART:${start}
+DTEND:${end}
+SUMMARY:${summary}
+DESCRIPTION:${description}
 END:VEVENT
 END:VCALENDAR
     `;
@@ -109,13 +60,10 @@ function createCalendarEvent(appointment) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'text/calendar',
-                'Authorization': 'Basic ' + Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64')
+                'Authorization': 'Basic ' + Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64'),
+                'Content-Length': Buffer.byteLength(icalEvent)
             }
         };
-        console.log("EVENT");
-        console.log(icalEvent);
-        console.log("Options");
-        console.log(options);
 
         const req = https.request(options, (res) => {
             let data = '';
@@ -128,13 +76,13 @@ function createCalendarEvent(appointment) {
                 if (res.statusCode >= 200 && res.statusCode < 300) {
                     resolve(data);
                 } else {
-                    reject(new Error(`HTTP error! status: ${res.statusCode}`));
+                    reject(new Error(`HTTP error! status: ${res.statusCode}, response: ${data}`));
                 }
             });
         });
 
         req.on('error', (e) => {
-            reject(e);
+            reject(new Error(`Request error: ${e.message}`));
         });
 
         req.write(icalEvent);
@@ -142,21 +90,15 @@ function createCalendarEvent(appointment) {
     });
 }
 
-function toISO8601(dateStr, timeStr) { //change date into correct format to add to radicale
-    // Combine date and time strings into a single date-time string
-    const dateTimeStr = `${dateStr}T${timeStr}:00`;
-
-    // Create a new Date object from the combined date-time string
-    const date = new Date(dateTimeStr);
-
-    // Return the ISO 8601 formatted string
-    return date.toISOString();
-}
-
-function addOneHour(date) { //add one hour to get the end of te appointment
-    const newDate = new Date(date);
-    newDate.setHours(newDate.getHours() + 1);
-    return newDate;
+/**
+ * Convert date and time to ISO 8601 format
+ * @param {string} dateStr - The date string
+ * @param {string} timeStr - The time string
+ * @returns {string} - ISO 8601 formatted date-time string
+ */
+function toISO8601(dateStr, timeStr) {
+    const dateTimeStr = `${dateStr}T${timeStr}:00Z`; // Append timezone information
+    return new Date(dateTimeStr).toISOString();
 }
 
 module.exports = { createCalendarEvent };
