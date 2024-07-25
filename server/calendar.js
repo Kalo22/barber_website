@@ -35,11 +35,11 @@ module.exports = { createCalendarEvent };
 const https = require('http');
 
 // Radicale server configuration
-const RADICALE_SERVER_URL = 'localhost'; // Only the hostname, we'll include the port and path in the request
-const RADICALE_PORT = 5232; // Port to your Radicale server
-const CALENDAR_PATH = '/collections/collection-root/kalo/test/'; // Path to the user's calendar in Radicale
-const USERNAME = 'kalo'; // Radicale username
-const PASSWORD = '2213'; // Radicale password
+const RADICALE_SERVER_URL = 'cal.batnako.net'; // Only the hostname, we'll include the port and path in the request
+const RADICALE_PORT = 80; // Port to your Radicale server
+const CALENDAR_PATH = '/testuser/efba3538-fccd-3ecb-d678-2859a01f6a00/'; // Path to the user's calendar in Radicale
+const USERNAME = 'testuser'; // Radicale username
+const PASSWORD = 'testpassword'; // Radicale password
 
 /**
  * Create an iCalendar formatted event
@@ -112,6 +112,10 @@ function createCalendarEvent(appointment) {
                 'Authorization': 'Basic ' + Buffer.from(`${USERNAME}:${PASSWORD}`).toString('base64')
             }
         };
+        console.log("EVENT");
+        console.log(icalEvent);
+        console.log("Options");
+        console.log(options);
 
         const req = https.request(options, (res) => {
             let data = '';
