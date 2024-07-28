@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid'); // Import the UUID library
 
 function formatCurrentDate() { //function to format current date
     const date = new Date();
-    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0];
 }
 
 function createICalEvent(appointment) {  //function to create an event containing the correct event structure
@@ -99,7 +99,7 @@ function toICalendarFormat(isoDateString) {
     }
 
     // Format the date to iCalendar format (YYYYMMDDTHHMMSSZ)
-    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    return date.toISOString().replace(/[-:]/g, '').split('.')[0];
 }
 
 module.exports = { createCalendarEvent };
