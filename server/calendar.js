@@ -7,7 +7,7 @@ function formatCurrentDate() { //function to format current date
 }
 
 function createICalEvent(appointment) {  //function to create an event containing the correct event structure
-    const { email, name, start} = appointment; //gets the properties of the appointment that was created through the form
+    const {phone, email, name, start} = appointment; //gets the properties of the appointment that was created through the form
     const uid = `${uuidv4()}@your-domain.com`; // Generate a new UID for each event
     const newend = new Date(new Date(start).getTime() + 60 * 60 * 1000); //calculates the time at which the appt ends (+1hr)
 
@@ -22,7 +22,7 @@ DTSTAMP:${formatCurrentDate()}
 DTSTART:${toICalendarFormat(start)}
 DTEND:${toICalendarFormat(newend)}
 SUMMARY:Meeting with Client
-DESCRIPTION:${name}
+DESCRIPTION:Name: ${name}\\nPhone: ${phone}\\nEmail: ${email}
 LOCATION:Masquerade salon
 END:VEVENT
 END:VCALENDAR`;
