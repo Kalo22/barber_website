@@ -1,0 +1,142 @@
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f5f5f5;
+}
+
+#container {
+    text-align: center;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.output {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+
+#datepicker {
+    margin: 0 auto;
+}
+
+/* Custom styles for Pikaday */
+.pika-single {
+    display: inline-block;
+    margin: 0 auto; /* Center the calendar */
+    width: 400px; /* Set a fixed width for the calendar */
+}
+
+.pika-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+/* Hide the year element */
+.pika-year {
+    display: none;
+}
+
+/* Add box styling specifically to the .pika-label */
+.pika-title .pika-label {
+    font-size: 1.2em; /* Adjust font size if needed */
+    font-weight: bold; /* Bold text for better visibility */
+    color: #333; /* Text color */
+    background-color: #f9f9f9; /* Background color for the box */
+    padding: 5px 10px; /* Padding inside the box */
+    border: 1px solid #ddd; /* Border color */
+    border-radius: 10px; /* Rounded corners for the box */
+    margin: 0 auto; /* Center the box within its container */
+}
+
+/* Hide the month and year dropdowns */
+.pika-select-month, .pika-select-year {
+    display: none; 
+    font-size: 1.2em;
+    padding: 5px;
+}
+
+/* Style for navigation buttons with rounded corners */
+.pika-prev, .pika-next {
+    cursor: pointer;
+    font-size: 1.5em;
+    line-height: 1;
+    padding: 10px 15px; /* Add padding for button size */
+    border: 1px solid #ccc; /* Add border */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #fff; /* White background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
+    user-select: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.pika-prev {
+    margin-right: 5px; /* Space between previous and next buttons */
+}
+
+.pika-next {
+    margin-left: 5px; /* Space between previous and next buttons */
+}
+
+.pika-prev:hover, .pika-next:hover {
+    background-color: #f0f0f0; /* Change background on hover */
+    border-color: #aaa; /* Darker border on hover */
+}
+
+.inactive {
+    cursor: not-allowed;
+    background-color: #e0e0e0;
+    border-color: #999;
+    pointer-events: none;
+}
+
+/* Additional adjustments for Pikaday calendar */
+.pika-table {
+    width: 100%; /* Ensure full width of the calendar table */
+}
+
+.pika-lendar {
+    text-align: center; /* Center align the month and year title */
+}
+
+/* Add squares around the dates */
+.pika-single td {
+    border: 1px solid #ccc; /* Add border to create square */
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    transition: background-color 0.3s ease;
+}
+
+.pika-single td:hover {
+    background-color: #f0f0f0; /* Change background on hover */
+}
+
+.pika-single td.is-today {
+    background-color: #dff0d8; /* Highlight today's date */
+}
+
+.pika-single td.is-selected {
+    background-color: #337ab7;
+    color: white;
+}
+
+/* Style for past dates */
+.pika-single td.is-disabled {
+    background-color: #e0e0e0; /* Gray color for disabled dates */
+    color: #9e9e9e; /* Light gray text */
+    pointer-events: none; /* Prevent clicking */
+    cursor: default; /* Default cursor to indicate disabled */
+}
