@@ -1,4 +1,4 @@
-Bobka Barber Website
+Scalable appointment scheduling tool, utilizing calDav protocol, HTML, htmx, tailwind, and node.js
 
 ## License
 
