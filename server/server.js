@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 //const session = require('express-session');
 const { sendConfirmationEmail } = require('./email');
-const { createCalendarEvent } = require('./calendar.js');
+const { createCalendarEvent, getValidHours } = require('./calendar.js');
 const app = express();
 const PORT = 3000;
 
@@ -51,6 +51,17 @@ app.get('/confirm/:id', async (req, res) => {
         }
     } else {
         res.status(404).send('Appointment not found or already confirmed.');
+    }
+});
+
+app.get('/hours/:day', async (req, res) => {
+    const day = new Date(req.params.day);
+
+    try {
+        const validHours = await getValidHours(day);
+        res.status(200).send(validHours);
+    } catch {
+        res.status(500);
     }
 });
 
