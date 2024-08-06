@@ -1,6 +1,5 @@
 const https = require('https'); // Ensure you're using the correct module
 const { v4: uuidv4 } = require('uuid'); // Import the UUID library
-const xml2js = require('xml2js');
 
 // ---------------- Create Appointment ---------------- //
 
@@ -145,7 +144,15 @@ function getValidHours(day) {
 
             res.on('end', () => {
                 if (res.statusCode >= 200 && res.statusCode < 300) {
-                    extractAppointments(data, resolve, reject);
+                    let dates = [];
+                    const regex = new RegExp(`DTSTART\\s*:\\s*(.*)`, 'g');
+                    
+                    let match;
+                    while ((match = regex.exec(data)) !== null) {
+                        dates.push(match[1])
+                    }
+                    
+                    resolve(dates);
                 } else {
                     console.error('Failed Request:', data);
                     reject(new Error('Failed Request'));
@@ -160,26 +167,6 @@ function getValidHours(day) {
         
         req.write(icalData);
         req.end();
-    });
-}
-
-function extractAppointments(data, resolve, reject)
-{
-    const parser = new xml2js.Parser();
-    parser.parseString(data, (err, result) => {
-        if(err) {
-            reject('Failed to parse XML: ' + err);
-        }
-        
-        let dates = [];
-        const regex = new RegExp(`DTSTART\\s*:\\s*(.*)`, 'g');
-        
-        let match;
-        while ((match = regex.exec(data)) !== null) {
-            dates.push(match[1])
-        }
-        
-        resolve(dates);
     });
 }
 
