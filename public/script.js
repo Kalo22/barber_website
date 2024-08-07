@@ -45,23 +45,64 @@ document.addEventListener('DOMContentLoaded', function() {
         const hoursContainer = document.getElementById('hours-container');
         hoursContainer.innerHTML = ''; // Clear previous hours
 
-        for (let i = 9; i < 20; i++) {
-            const hour = i < 10 ? `0${i}:00` : `${i}:00`;
-            const button = document.createElement('div');
-            button.textContent = hour;
-            button.className = 'hour-button';
-            button.addEventListener('click', function() {
-                selectedTime = hour; // Update the selected time
+        disableUnavailableTimes(selectedDate).then(unavailableTimes => {
+            for (let i = 9; i < 20; i++) {
+                const hour = i < 10 ? `0${i}:00` : `${i}:00`;
+                const button = document.createElement('div');
+                button.textContent = hour;
+                button.className = 'hour-button';
 
-                // Update the selected date with the chosen time
-                const formattedDateTime = moment(`${selectedDate} ${hour}`).tz('Europe/Sofia').format('YYYY-MM-DD HH:mm:ss');
-                document.getElementById('selected-date').textContent = formattedDateTime;
+                if (unavailableTimes.includes(hour)) { //checks weather the time is available
+                    button.classList.add('inactive'); // Add class to style unavailable hours
+                    button.style.pointerEvents = 'none'; // Make it non-clickable
+                    button.style.opacity = '0.5'; // Optional: make it visually distinct
+                } else {
+                    button.addEventListener('click', function() {
+                        selectedTime = hour; // Update the selected time
 
-                // Hide the hours section
-                document.getElementById('hours-section').classList.add('hidden');
-            });
-            hoursContainer.appendChild(button);
+                        // Update the selected date with the chosen time
+                        const formattedDateTime = moment(`${selectedDate} ${hour}`).tz('Europe/Sofia').format('YYYY-MM-DD HH:mm:ss');
+                        document.getElementById('selected-date').textContent = formattedDateTime;
+
+                        // Hide the hours section
+                        document.getElementById('hours-section').classList.add('hidden');
+                    });
+                }
+
+                hoursContainer.appendChild(button);
+            }
+        });
+    }
+
+    // Function to disable unavailable times - creates an array of the unavailable tims
+    async function disableUnavailableTimes(selectedDate) {
+        const validHours = await getValidHours(selectedDate);
+        const timeArray = validHours.map(extractTime);
+        console.log(timeArray);
+        return timeArray;
+    }
+
+    // Function to fetch valid hours from the server
+    async function getValidHours(selectedDate) {
+        try {
+            const response = await fetch(`/hours/:${selectedDate}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const validHours = await response.json();
+            console.log("Valid hours fetched:", validHours);
+            return validHours; // Assuming the server returns an array of valid hours
+        } catch (error) {
+            console.error('Failed to fetch valid hours:', error);
+            return [];
         }
+    }
+
+    // Function to extract the time in 00:00 format from the fetched unavaiable times
+    function extractTime(datetime) {
+        const hours = datetime.substring(9, 11);
+        const minutes = datetime.substring(11, 13);
+        return `${hours}:${minutes}`;
     }
 
     // Function to update navigation text
